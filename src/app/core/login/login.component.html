@@ -1,0 +1,29 @@
+<div class="wrapper">
+  <h3 class="title">Welcome</h3>
+  <h5 class="subtitle">
+    Please <a [routerLink]="['/register']">Register</a> new account with your e-mail
+  </h5>
+  <h5 class="subtitle">or log in to an existing account with your email and password</h5>
+  <form [formGroup]="loginForm" class="loginForm">
+    <mat-form-field appearance="outline">
+      <mat-label>E-mail</mat-label>
+      <input matInput placeholder="Email" formControlName="email">
+      <mat-icon matSuffix>mail</mat-icon>
+      <mat-error *ngIf="loginForm.get('email').invalid">Invalid email address</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput placeholder="Password" formControlName="password">
+      <mat-icon matSuffix>vpn_key</mat-icon>
+      <mat-error *ngIf="loginForm.get('password').invalid">Invalid password</mat-error>
+    </mat-form-field>
+    <button class="loginBtn" mat-flat-button color="primary" (click)="login(loginForm.value)"
+      [disabled]="!loginForm.valid">
+      Log in
+    </button>
+  </form>
+  <h5 class="subtitle">You can also log in with your google account</h5>
+  <button class="loginBtn" mat-flat-button color="primary" (click)="loginWithGoogle()">
+    Login with Google
+  </button>
+</div>
