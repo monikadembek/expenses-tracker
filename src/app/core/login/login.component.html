@@ -7,13 +7,13 @@
   <form [formGroup]="loginForm" class="loginForm">
     <mat-form-field appearance="outline">
       <mat-label>E-mail</mat-label>
-      <input matInput placeholder="Email" formControlName="email">
+      <input type="email" matInput placeholder="Email" formControlName="email">
       <mat-icon matSuffix>mail</mat-icon>
       <mat-error *ngIf="loginForm.get('email').invalid">Invalid email address</mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput placeholder="Password" formControlName="password">
+      <input type="password" matInput placeholder="Password" formControlName="password">
       <mat-icon matSuffix>vpn_key</mat-icon>
       <mat-error *ngIf="loginForm.get('password').invalid">Invalid password</mat-error>
     </mat-form-field>

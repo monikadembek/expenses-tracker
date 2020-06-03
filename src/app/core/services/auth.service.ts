@@ -5,6 +5,9 @@ import { auth } from 'firebase/app';
 import { Observable } from 'rxjs';
 import { Credentials } from '../models/credentials';
 import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { AuthState } from './auth-state';
+import { AuthStore } from './auth-store';
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +16,16 @@ export class AuthService {
 
 
   constructor(private fireAuth: AngularFireAuth,
-              private router: Router) { }
+    private authStore: AuthStore,
+    private router: Router) { }
 
   // AuthState is a stream which emits logged in user
   // if user logs out it will emit null
   authState$: Observable<User | null> = this.fireAuth.authState;
 
-  get user(): User | null {
-    return this.fireAuth.auth.currentUser;
-  }
+  // get user(): User | null {
+  //   return this.fireAuth.auth.currentUser;
+  // }
 
   login({ email, password }: Credentials): Promise<any> {
     const session = auth.Auth.Persistence.SESSION;
@@ -40,6 +44,21 @@ export class AuthService {
 
   logout() {
     return this.fireAuth.auth.signOut();
+  }
+
+  setAuthState(): Observable<void> {
+    return this.authState$.pipe(
+      map((state: User | null) => {
+        console.log('State in map before setState fn: ', state);
+        const authState: AuthState = {
+          uid: state.uid,
+          email: state.email,
+          providerId: state.providerId,
+          displayName: state.displayName
+        };
+        this.authStore.setState(authState);
+      })
+    );
   }
 
 }

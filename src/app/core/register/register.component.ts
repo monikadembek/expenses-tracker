@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Credentials } from '../models/credentials';
 
 @Component({
   selector: 'app-register',
@@ -7,9 +11,39 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor() { }
+  credentials: Credentials = {
+    email: '',
+    password: ''
+  };
+  loginForm: FormGroup;
+  registerInfo = '';
+  registerError = '';
 
-  ngOnInit() {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private formBuilder: FormBuilder) { }
+
+  ngOnInit(): void {
+    this.loginForm = this.formBuilder.group({
+      email: [null, [Validators.required, Validators.minLength(3)]],
+      password: [null, [Validators.required, Validators.minLength(3)]],
+    });
+  }
+
+  register(values: Credentials): void {
+    const email = values.email.trim();
+    const password = values.password.trim();
+    this.credentials = {
+      email,
+      password
+    };
+    this.authService.register(this.credentials)
+      .then(() => this.registerInfo = 'Account was created, please log in')
+      .catch(err => {
+        console.log(err);
+        this.registerError = err.message;
+      });
   }
 
 }

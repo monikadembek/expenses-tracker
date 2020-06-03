@@ -18,25 +18,33 @@ export class LoginComponent implements OnInit {
   };
   loginForm: FormGroup;
 
-  constructor(private authService: AuthService,
+  constructor(
+    private authService: AuthService,
     private router: Router,
     private formBuilder: FormBuilder) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
       email: [null, [Validators.required, Validators.minLength(3)]],
       password: [null, [Validators.required, Validators.minLength(3)]],
     });
   }
 
-  login(values: Credentials) {
-    console.log(values);
+  login(values: Credentials): void {
+    const email = values.email.trim();
+    const password = values.password.trim();
+    this.credentials = {
+      email,
+      password
+    };
     this.authService.login(this.credentials)
-      .then(() => this.router.navigate(['/dashboard']))
+      .then(() => {
+        this.router.navigate(['/dashboard']);
+      })
       .catch(err => console.log(err));
   }
 
-  loginWithGoogle() {
+  loginWithGoogle(): void {
     this.authService.loginWithGoogle()
       .then(() => this.router.navigate(['/dashboard']))
       .catch(err => console.log(err));

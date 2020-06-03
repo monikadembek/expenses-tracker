@@ -3,6 +3,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { User } from 'firebase';
 import { Observable } from 'rxjs';
+import { AuthStore } from 'src/app/core/services/auth-store';
 
 @Component({
   selector: 'app-navbar',
@@ -12,15 +13,16 @@ import { Observable } from 'rxjs';
 export class NavbarComponent implements OnInit {
 
   authState$: Observable<User | null>;
-  user: any;
 
   constructor(private authService: AuthService,
-              private router: Router) { }
+    private authStore: AuthStore,
+    private router: Router) { }
 
   ngOnInit() {
     this.authState$ = this.authService.authState$;
-    this.user = this.authService.user;
-    console.log(this.user);
+    // this.authState$.subscribe(data => console.log('user data: ', data));
+    // this.authStore.state$.subscribe(state => console.log('authStore state$: ', state));
+    // console.log('authStore state', this.authStore.state);
   }
 
   logout() {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthStore } from 'src/app/core/services/auth-store';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authStore: AuthStore) { }
 
   ngOnInit() {
+    console.log('authStore state: ', this.authStore.state);
   }
 
 }

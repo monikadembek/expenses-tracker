@@ -1,1 +1,27 @@
-<p>register works!</p>
+<div class="wrapper">
+    <h3 class="title">Welcome</h3>
+    <h5 class="subtitle">
+        Please register new account with your e-mail
+    </h5>
+    <h5 class="subtitle">or <a [routerLink]="['/login']">log in</a> to an existing account</h5>
+    <form [formGroup]="loginForm" class="loginForm">
+        <mat-form-field appearance="outline">
+            <mat-label>E-mail</mat-label>
+            <input type="email" matInput placeholder="Email" formControlName="email">
+            <mat-icon matSuffix>mail</mat-icon>
+            <mat-error *ngIf="loginForm.get('email').invalid">Invalid email address</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input type="password" matInput placeholder="Password" formControlName="password">
+            <mat-icon matSuffix>vpn_key</mat-icon>
+            <mat-error *ngIf="loginForm.get('password').invalid">Invalid password</mat-error>
+        </mat-form-field>
+        <button class="loginBtn" mat-flat-button color="primary" (click)="register(loginForm.value)"
+            [disabled]="!loginForm.valid">
+            Register
+        </button>
+    </form>
+    <p>{{ registerInfo }}</p>
+    <mat-error *ngIf="registerError">{{ registerError }}</mat-error>
+</div>
