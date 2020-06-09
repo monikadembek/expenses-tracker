@@ -1,0 +1,39 @@
+.vertical-menu {
+    width: 55px;
+    height: 100%;
+    padding-top: 40px;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    color: white;
+
+    .menu-item {
+      width: 100%;
+      height: 55px;
+      
+      a {
+        display: inline-block;
+        text-align: center;
+        line-height: 55px;
+        width: 100%;
+        height: 100%;
+      }
+
+      a:hover {
+        background-color: #333;
+      }
+
+      .mat-icon {
+        font-size: 24px;
+        color: white;
+        transform: translateY(4px);
+      }
+    }
+    
+  }
+
+  .main-content {
+    width: calc(100% - 50px);
+  }

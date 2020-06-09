@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { User } from 'firebase';
 import { auth } from 'firebase/app';
-import { Observable } from 'rxjs';
+import { Observable, EMPTY } from 'rxjs';
 import { Credentials } from '../models/credentials';
 import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { map, filter, tap, switchMap } from 'rxjs/operators';
 import { AuthState } from './auth-state';
 import { AuthStore } from './auth-store';
 
@@ -48,7 +48,9 @@ export class AuthService {
 
   setAuthState(): Observable<void> {
     return this.authState$.pipe(
-      map((state: User | null) => {
+      tap(data => console.log('Tap data: ', data)),
+      filter((state: User | null) => state !== null),
+      map((state: User) => {
         console.log('State in map before setState fn: ', state);
         const authState: AuthState = {
           uid: state.uid,

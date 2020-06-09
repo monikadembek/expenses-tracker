@@ -1,0 +1,27 @@
+<nav class="vertical-menu">
+    <div class="menu-item">
+        <a routerLink="/welcome">
+        <mat-icon>home</mat-icon>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a routerLink="/expenses/add">
+        <mat-icon>add_circle_outline</mat-icon>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a routerLink="/expenses">
+        <mat-icon>request_quote</mat-icon>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a routerLink="/dashboard">
+        <mat-icon>timeline</mat-icon>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a [routerLink]="['/']">
+        <mat-icon>receipt_long</mat-icon>
+        </a>
+    </div>
+</nav>
