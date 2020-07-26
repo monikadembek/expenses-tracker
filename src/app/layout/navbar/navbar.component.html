@@ -2,7 +2,7 @@
   <h1 class="title">Expenses tracker</h1>
   <div class="menu">
     <div *ngIf="authState$ | async as user; else showLogin">
-      <span>Hello {{user.email}}</span>
+      <span>Hi {{displayUser(user.email)}}</span>
       <a (click)="logout()">Logout</a>
     </div>
   </div>

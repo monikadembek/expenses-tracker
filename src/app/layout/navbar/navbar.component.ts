@@ -30,4 +30,8 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  displayUser(email: string): string {
+    return email.split('@')[0];
+  }
+
 }

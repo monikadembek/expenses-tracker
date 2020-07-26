@@ -1,1 +1,77 @@
-<p>list-expenses works!</p>
+<h2>List expenses</h2>
+
+<div>
+  Display expenses:
+  <mat-button-toggle-group name="selectExpenses" aria-label="select expenses" (change)="filterExpenses($event)" class="toggleButtonsGroup">
+    <mat-button-toggle value="currentMonth">Current month</mat-button-toggle>
+    <mat-button-toggle value="lastMonth">Last month</mat-button-toggle>
+    <mat-button-toggle value="lastFew">Last five expenses</mat-button-toggle>
+    <mat-button-toggle value="all" checked="true">All</mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
+<mat-list>
+  <div mat-subheader>Expenses: <span> {{ sumOfExpenses$ | async }} pln</span></div>
+  <mat-list-item *ngFor="let expense of (expenses$ | async) as expenses; let i = index; last as last">
+    <mat-icon mat-list-icon>request_quote</mat-icon>
+    <div mat-line>
+      {{i+1}}. {{expense.title}} - {{expense.value}}zł
+      <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="displayEditForm(expense, i)" class="icon-btn">edit</mat-icon>
+      <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="delete(expense)" class="icon-btn">delete</mat-icon>
+    </div>
+    <div mat-line>{{expense.date}} - {{expense.category}}</div>
+    <div mat-line *ngIf="editState && i === editItemIndex" class="form-list-item">
+    <form novalidate (ngSubmit)="editExpense(addExpenseForm, expense.id)" 
+      [formGroup]="addExpenseForm" #formDirective="ngForm" class="edit-form">
+      
+      <mat-form-field appearance="standard" class="text-input">
+        <mat-label>Expense title</mat-label>
+        <input matInput placeholder="Expense title" formControlName="title">
+        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+        <mat-error *ngIf="addExpenseForm.get('title').dirty && addExpenseForm.get('title').errors?.required">This field is required</mat-error>
+        <mat-error *ngIf="addExpenseForm.get('title').dirty && addExpenseForm.get('title').errors?.minLength">
+          This field needs to be minimum 3 characters long
+        </mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="standard" class="number-input">
+        <mat-label>Value</mat-label>
+        <input matInput type="number" min="0" id="value" placeholder="Expense value" formControlName="value">
+        <mat-error *ngIf="addExpenseForm.get('value').errors">This field is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="standard" class="date-input">
+        <mat-label>Date</mat-label>
+        <input matInput type="date" [value]="expense.date" id="date" placeholder="Date" formControlName="date">
+        <mat-error *ngIf="addExpenseForm.get('value').errors">This field is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="select-input">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" required [(value)]="expense.category">
+          <mat-option *ngFor="let enum of expenseCategory | keyvalue" [value]="enum.key">
+            {{ enum.value }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="addExpenseForm.get('category').errors">This field is required</mat-error>
+      </mat-form-field>
+      <div class="buttons-container">
+        <button mat-flat-button color="primary" type="submit" [disabled]="addExpenseForm.invalid">Save</button>
+        <button mat-flat-button color="primary" type="button" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </form>
+    </div>
+    <mat-divider *ngIf="!last"></mat-divider>
+  </mat-list-item>
+</mat-list>
+
+<!--
+<mat-form-field appearance="fill">
+  <mat-label>Select an option</mat-label>
+  <mat-select [(value)]="selected">
+    <mat-option *ngFor="let enum of timespan | keyvalue" value="enum.key">{{ enum.value }}</mat-option>
+  </mat-select>
+</mat-form-field>
+  
+<p>You selected: {{selected}}</p>
+-->

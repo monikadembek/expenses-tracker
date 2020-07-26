@@ -11,8 +11,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class AuthGuard implements CanActivate {
 
   constructor(private authService: AuthService,
-    private router: Router,
-    private fireAuth: AngularFireAuth) { }
+              private router: Router,
+              private fireAuth: AngularFireAuth) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.authService.authState$

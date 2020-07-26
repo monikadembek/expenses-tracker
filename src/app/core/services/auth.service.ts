@@ -8,6 +8,8 @@ import { Router } from '@angular/router';
 import { map, filter, tap, switchMap } from 'rxjs/operators';
 import { AuthState } from './auth-state';
 import { AuthStore } from './auth-store';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { UserData } from '../models/UserData';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +18,11 @@ export class AuthService {
 
 
   constructor(private fireAuth: AngularFireAuth,
-    private authStore: AuthStore,
-    private router: Router) { }
+              private afs: AngularFirestore,
+              private authStore: AuthStore,
+              private router: Router) { }
 
-  // AuthState is a stream which emits logged in user
+  // AuthState is a stream which emits logged user
   // if user logs out it will emit null
   authState$: Observable<User | null> = this.fireAuth.authState;
 
@@ -61,6 +64,10 @@ export class AuthService {
         this.authStore.setState(authState);
       })
     );
+  }
+
+  insertUserIntoDb(user: UserData) {
+    this.afs.collection('users').doc(user.userId).set(user);
   }
 
 }

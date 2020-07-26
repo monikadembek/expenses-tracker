@@ -1,1 +1,40 @@
-<p>add-expenses works!</p>
+<h2>Add expense</h2>
+<form novalidate (ngSubmit)="save(addExpenseForm)" [formGroup]="addExpenseForm" #formDirective="ngForm">
+
+    <mat-form-field appearance="standard">
+      <mat-label>Expense title</mat-label>
+      <input matInput placeholder="Expense title" formControlName="title">
+      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+      <mat-error *ngIf="addExpenseForm.get('title').dirty && addExpenseForm.get('title').errors?.required">This field is required</mat-error>
+      <mat-error *ngIf="addExpenseForm.get('title').dirty && addExpenseForm.get('title').errors?.minLength">
+        This field needs to be minimum 3 characters long
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="standard">
+      <mat-label>Value</mat-label>
+      <input matInput type="number" min="0" id="value" placeholder="Expense value" formControlName="value">
+      <mat-error *ngIf="addExpenseForm.get('value').errors">This field is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="standard">
+      <mat-label>Date</mat-label>
+      <input matInput type="date" [value]="[date]" id="date" placeholder="Date" formControlName="date">
+      <mat-error *ngIf="addExpenseForm.get('value').errors">This field is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Expenses category</mat-label>
+      <mat-select formControlName="category" required>
+        <mat-option>--</mat-option>
+        <mat-option *ngFor="let enum of expenseCategory | keyvalue" [value]="enum.key">
+          {{ enum.value }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="addExpenseForm.get('category').errors">This field is required</mat-error>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="addExpenseForm.invalid">Save</button>
+</form>
+{{addExpenseForm.value | json}}
+{{addExpenseForm.status}}

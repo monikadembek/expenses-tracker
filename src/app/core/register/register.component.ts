@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Credentials } from '../models/credentials';
+import { UserData } from '../models/UserData';
 
 @Component({
   selector: 'app-register',
@@ -39,7 +40,15 @@ export class RegisterComponent implements OnInit {
       password
     };
     this.authService.register(this.credentials)
-      .then(() => this.registerInfo = 'Account was created, please log in')
+      .then((data) => {
+        console.log('in register - returned data:', data);
+        this.registerInfo = 'Account was created, please log in';
+        const user: UserData = {
+          userId: data.user.uid,
+          email: data.user.email
+        };
+        this.authService.insertUserIntoDb(user);
+      })
       .catch(err => {
         console.log(err);
         this.registerError = err.message;

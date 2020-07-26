@@ -6,6 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 
 @NgModule({
@@ -17,6 +21,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatInputModule,
     MatButtonModule,
     MatToolbarModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatListModule,
+    MatButtonToggleModule,
   ],
   exports: [
     CommonModule,
@@ -25,6 +33,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatInputModule,
     MatButtonModule,
     MatToolbarModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatListModule,
+    MatButtonToggleModule,
   ]
 })
 export class MaterialModule { }

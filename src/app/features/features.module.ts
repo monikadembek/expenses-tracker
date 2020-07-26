@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MaterialModule } from '../material/material.module';
 import { FeaturesRoutingModule } from './features-routing.module';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { AddExpensesComponent } from './expenses/add-expenses/add-expenses.component';
 import { ListExpensesComponent } from './expenses/list-expenses/list-expenses.component';
 
@@ -14,6 +16,8 @@ import { ListExpensesComponent } from './expenses/list-expenses/list-expenses.co
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    MaterialModule,
     FeaturesRoutingModule,
   ],
   exports: [
