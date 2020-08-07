@@ -31,6 +31,7 @@ export class ExpensesService {
       .snapshotChanges()
       .pipe(
        // tap(snaps => console.log(snaps)),
+        tap(() => console.log('subsciption - getAllExpensesFromDb')),
         map(snaps => {
           const expenses: Expense[] = [];
           snaps.map((snap: any) => {
@@ -44,16 +45,15 @@ export class ExpensesService {
           return expenses;
         }),
         tap((data: Expense[]) => {
-          console.log('putting expenses to store');
+          console.log('putting expenses to store - in getAllExpensesFromDB fn');
           this.putExpensesToStore(data);
         }),
-        first(), tap(() => console.log('sub'))
-      //  tap(data => console.log('data from expenses store: ', this.expensesStore.state, data))
+        first()
       );
   }
 
   editExpenseInDb(expense: Expense): Observable<any> {
-    console.log('save edited expense in db', expense);
+    console.log('edited expense to be saved in db:', expense);
     return from(this.afs.doc(`users/${this.userId}/expenses/${expense.id}`).update(expense));
   }
 
@@ -64,17 +64,20 @@ export class ExpensesService {
     this.expensesStore.setState(state);
   }
 
-  getAllExpensesFromStore(): ExpensesState {
+  getAllExpensesFromStoreState(): ExpensesState {
     return this.expensesStore.state;
   }
 
-  getAllExpenses(): Observable<Expense[]> {
+  getAllExpensesFromStore(): Observable<Expense[]> {
     return this.expensesStore.state$
-      .pipe(map((state: ExpensesState) => state.expenses), tap(() => console.log('sub')));
+      .pipe(
+        map((state: ExpensesState) => state.expenses),
+        tap(() => console.log('subscription - getAllExpensesFromStore'))
+      );
   }
 
   getLastNumberOfExpenses(num: number): Observable<Expense[]> {
-    return this.getAllExpenses().pipe(
+    return this.getAllExpensesFromStore().pipe(
       map(expenses => {
         const sortedExpenses: Expense[] = expenses.sort((a, b) => {
           return (new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -82,11 +85,11 @@ export class ExpensesService {
         console.log('sorted expenses: ', sortedExpenses);
         return sortedExpenses.slice(0, num);
       }),
-      tap(() => console.log('sub'))
+      tap(() => console.log('subscription - getLastNumberOfExpenses'))
     );
   }
 
-  getSelectedMonthExpensesFromDB(selectedMonthDate: string): Observable<any> {
+  getSelectedMonthExpensesFromDB(selectedMonthDate: string): Observable<Expense[]> {
     const startSelectedMonthDate = selectedMonthDate.slice(0, 8) + '01';
     const nextMonth = new Date(startSelectedMonthDate).getMonth() + 1;
     const nextMonthDate = new Date().setMonth(nextMonth);
@@ -108,7 +111,36 @@ export class ExpensesService {
           });
           return expenses;
         }),
-        first(), tap(() => console.log('sub'))
+        first(),
+        tap(() => console.log('subscription - getSelectedMonthExpenseFromDb'))
+      //  tap(data => console.log('data from expenses store: ', this.expensesStore.state, data))
+      );
+  }
+
+  getExpensesForDatesFromDB(fromD: string, toD: string): Observable<Expense[]> {
+    console.log(new Date(fromD).toISOString(), new Date(toD).toISOString());
+    const dateFrom = new Date(fromD).toISOString().slice(0, 10);
+    const dateTo = new Date(toD).toISOString().slice(0, 10);
+    console.log(dateFrom, dateTo);
+    return this.afs.collection(`users/${this.userId}/expenses`,
+      ref => ref.where('date', '>', dateFrom).where('date', '<=', dateTo))
+      .snapshotChanges()
+      .pipe(
+       // tap(snaps => console.log(snaps)),
+        map(snaps => {
+          const expenses: Expense[] = [];
+          snaps.map((snap: any) => {
+            expenses.push(
+            {
+              id: snap.payload.doc.id,
+              ...snap.payload.doc.data()
+            }
+            );
+          });
+          return expenses;
+        }),
+        first(),
+        tap((data: Expense[]) => console.log('subscription - getExpensesForDatesFromDB', data))
       //  tap(data => console.log('data from expenses store: ', this.expensesStore.state, data))
       );
   }

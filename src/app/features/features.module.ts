@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { FeaturesRoutingModule } from './features-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -17,6 +18,7 @@ import { ListExpensesComponent } from './expenses/list-expenses/list-expenses.co
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
     FeaturesRoutingModule,
   ],

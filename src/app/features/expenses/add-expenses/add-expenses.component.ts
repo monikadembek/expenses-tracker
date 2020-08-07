@@ -1,16 +1,20 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { ExpenseCategory } from '../models/ExpenseCategory';
 import { ExpensesService } from '../services/expenses.service';
-import { from } from 'rxjs';
+import { from, Subject } from 'rxjs';
 import { Expense } from '../models/Expense';
+import { takeUntil, switchMap, tap } from 'rxjs/operators';
+import { SnackbarService } from 'src/app/core/services/snackbar.service';
 
 @Component({
   selector: 'app-add-expenses',
   templateUrl: './add-expenses.component.html',
   styleUrls: ['./add-expenses.component.scss']
 })
-export class AddExpensesComponent implements OnInit {
+export class AddExpensesComponent implements OnInit, OnDestroy {
+
+  unSubscribe$ = new Subject();
 
   @ViewChild('formDirective', {static: true}) private formDirective: NgForm;
   addExpenseForm: FormGroup;
@@ -18,7 +22,8 @@ export class AddExpensesComponent implements OnInit {
   expenseCategory = ExpenseCategory;
 
   constructor(private fb: FormBuilder,
-              private expensesService: ExpensesService) { }
+              private expensesService: ExpensesService,
+              private snackbarService: SnackbarService) { }
 
   ngOnInit() {
     this.date = this.getDate();
@@ -30,11 +35,14 @@ export class AddExpensesComponent implements OnInit {
     console.log(form);
     console.log(form.value);
     if (form.dirty && form.valid) {
-      this.expensesService.insertExpenseIntoDb(form.value).subscribe(
-        () => {
+      this.expensesService.insertExpenseIntoDb(form.value).pipe(
+        takeUntil(this.unSubscribe$),
+        tap(() => {
           this.clearForm();
-        }
-      );
+          this.snackbarService.openSnackBar('Expense added', 3000, 'center', 'bottom');
+        }),
+        switchMap(() => this.expensesService.getAllExpensesFromDb()),
+      ).subscribe();
     }
   }
 
@@ -64,6 +72,12 @@ export class AddExpensesComponent implements OnInit {
       date: this.date,
       category: 'other'
     });
+  }
+
+  ngOnDestroy(): void {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+    console.log('unsubscribed from addExpensesToDb');
   }
 
 }

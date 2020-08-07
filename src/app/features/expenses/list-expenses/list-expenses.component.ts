@@ -3,10 +3,11 @@ import { ExpensesService } from '../services/expenses.service';
 import { Expense } from '../models/Expense';
 import { ExpenseTimespan } from '../models/enums';
 import { Subject, Observable, from, of, combineLatest, concat } from 'rxjs';
-import { takeUntil, map, startWith, take, delay, tap, switchMap, skipUntil, filter, takeWhile, skipWhile } from 'rxjs/operators';
+import { takeUntil, map, startWith, take, delay, tap, switchMap, skipUntil, filter, takeWhile, skipWhile, concatMap } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, NgForm } from '@angular/forms';
 import { ExpenseCategory } from '../models/ExpenseCategory';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
+import { SnackbarService } from 'src/app/core/services/snackbar.service';
 
 @Component({
   selector: 'app-list-expenses',
@@ -15,7 +16,7 @@ import { MatButtonToggleChange } from '@angular/material/button-toggle';
 })
 export class ListExpensesComponent implements OnInit, OnDestroy {
 
-  // unSubscribe$ = new Subject();
+  unSubscribe$ = new Subject();
 
   expenses$: Observable<Expense[]> = of([]);
   sumOfExpenses$: Observable<number>;
@@ -23,16 +24,18 @@ export class ListExpensesComponent implements OnInit, OnDestroy {
   editItemIndex: number;
   addExpenseForm: FormGroup;
   expenseCategory = ExpenseCategory;
-  // timespan = ExpenseTimespan;
+  dateFrom;
+  dateTo;
 
   @ViewChild('formDirective', {static: true}) private formDirective: NgForm;
 
   constructor(private fb: FormBuilder,
-              private expensesService: ExpensesService) {}
+              private expensesService: ExpensesService,
+              private snackbarService: SnackbarService) {}
 
   ngOnInit(): void {
     // check store and init only if there are no values in store
-    if (this.expensesService.getAllExpensesFromStore().expenses.length === 0) {
+    if (this.expensesService.getAllExpensesFromStoreState().expenses.length === 0) {
       console.log('must init store - get from db');
       this.initStore();
     } else {
@@ -45,15 +48,17 @@ export class ListExpensesComponent implements OnInit, OnDestroy {
   }
 
   initStore(): void {
-    this.expenses$ = concat(
-      this.expensesService.getAllExpensesFromDb(),
-      this.expensesService.getAllExpenses()
-    );
+    // this.expenses$ = concat(
+    //   this.expensesService.getAllExpensesFromDb(),
+    //   this.expensesService.getAllExpensesFromStore()
+    // );
+
+    this.expenses$ = this.expensesService.getAllExpensesFromDb();
   }
 
-  displayAllExpenses() {
+  displayAllExpenses(): void {
     console.log('get from store');
-    this.expenses$ = this.expensesService.getAllExpenses();
+    this.expenses$ = this.expensesService.getAllExpensesFromStore();
   }
 
   displayEditForm(expense: Expense, index: number): void {
@@ -76,8 +81,11 @@ export class ListExpensesComponent implements OnInit, OnDestroy {
       ...form.value
     };
     if (form.dirty && form.valid) {
-      this.expensesService.editExpenseInDb(editedExpense).subscribe(
+      this.expensesService.editExpenseInDb(editedExpense)
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(
         () => {
+          this.snackbarService.openSnackBar('Expense edited', 3000, 'center', 'bottom');
           this.cancelEdit();
           this.initStore();
         }
@@ -87,8 +95,12 @@ export class ListExpensesComponent implements OnInit, OnDestroy {
 
   delete(expense: Expense): void {
     console.log('delete: ', expense);
-    this.expensesService.deleteExpenseFromDb(expense.id).subscribe(data => {
+    if (this.editState) { this.editState = false; }
+    this.expensesService.deleteExpenseFromDb(expense.id)
+    .pipe(takeUntil(this.unSubscribe$))
+    .subscribe(data => {
       console.log('Deleted item with id: ', expense.id);
+      this.snackbarService.openSnackBar('Expense deleted', 3000, 'center', 'bottom');
       this.initStore();
     });
   }
@@ -149,9 +161,9 @@ export class ListExpensesComponent implements OnInit, OnDestroy {
     return this.expenses$ = this.expensesService.getSelectedMonthExpensesFromDB(lastMonthDateString);
   }
 
-  private getSumOfExpenses()  {
+  private getSumOfExpenses(): void  {
     this.sumOfExpenses$ = this.expenses$.pipe(
-      tap(expenses => console.log('1. in tap in getSumExpenses fn ', expenses)),
+      tap(expenses => console.log('subscription - getSumExpenses fn ', expenses)),
       switchMap((expenses: Expense[]) => this.sumValues(expenses))
     );
   }
@@ -163,9 +175,19 @@ export class ListExpensesComponent implements OnInit, OnDestroy {
     return of(sum);
   }
 
+  listExpenseForDates(form, fromDate: string, toDate: string): any {
+    console.log(form);
+    if (form.valid) {
+      console.log(fromDate, toDate);
+      // validate dates if from is smaller than to, only then call service
+      this.expenses$ = this.expensesService.getExpensesForDatesFromDB(fromDate, toDate);
+      this.getSumOfExpenses(); // work on this, produces 2 subscriptions to expense$
+    }
+  }
+
   ngOnDestroy() {
-    // this.unSubscribe$.next();
-    // this.unSubscribe$.complete();
-    // console.log('unsubscribed from getAllExpensesFromDbObservable');
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+    console.log('unsubscribed from getAllExpensesFromDbObservable');
   }
 }

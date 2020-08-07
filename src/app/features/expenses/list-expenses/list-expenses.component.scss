@@ -1,10 +1,80 @@
+@import '../../../styles/variables.scss';
+
+.dates-form {
+    margin: 20px 0;
+}
+
+.list {
+    list-style: none;
+    padding-left: 0;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.list-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 20px 0;
+    border-bottom: 1px solid #ccc;
+
+    &:hover {
+        background-color: #efefef;
+    }
+
+    &:last-child {
+        border: none;
+    }
+
+    & > * {
+        padding: 0 15px;
+    }
+
+    .list-item-content {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+
+        & > * {
+            padding-right: 10px;
+        }
+
+        & > .list-item-content-value {
+            font-weight: bold;
+        }
+
+        & > .list-item-content-date {
+            color: #999;
+        }
+    }
+
+    .list-item-buttons {
+        margin-left: 35px;
+    }
+}
+
 .icon-btn {
     cursor: pointer;
     margin: 5px;
+
+    &:hover {
+        color: $primary-color;
+    }
+}
+
+.chip {
+    display: inline-block;
+    background: $primary-color;
+    color: #fff;
+    border-radius: 20px;
+    padding: 5px 12px;
+    margin: 0 10px;
+    font-size: 13px;
 }
 
 .edit-form {
-    width: auto;
+    width: 100%;
     display: inline-flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -19,7 +89,8 @@
     }
 
     .text-input {
-        width: 200px;
+        max-width: 200px;
+        width: 100%;
     }
 
     .number-input {
@@ -41,13 +112,12 @@
 
 .form-list-item {
     margin: 20px 0 !important;
+    width: 100%;
 }
 
-:host ::ng-deep .mat-list-base .mat-list-item.mat-3-line, .mat-list-base .mat-list-option.mat-3-line {
-    height: auto !important;
+:host ::ng-deep .mat-form-field-infix {
+    width: 100% !important;
 }
-
-// :host ::ng-deep .mat-button-toggle-group
 
 @media (max-width: 680px) {
     .toggleButtonsGroup {
